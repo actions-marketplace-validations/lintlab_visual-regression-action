@@ -1,0 +1,64 @@
+name: Visual Regression Check (screenshot diff)
+description: Compare public page screenshots with the lintlab screenshot-diff Apify Actor.
+author: lintlab
+branding:
+  icon: eye
+  color: green
+inputs:
+  apify-token:
+    description: Apify API token.
+    required: true
+  urls:
+    description: One target URL or target URL|baseline page URL per line.
+    required: true
+  threshold:
+    description: Maximum changed pixels as a percentage (0 to 100).
+    required: false
+    default: '0.5'
+  viewport-width:
+    description: Actor device preset width in CSS pixels (390, 768, 1366, or 1440).
+    required: false
+    default: '1366'
+  full-page:
+    description: Capture the full page (true) or one viewport (false).
+    required: false
+    default: 'true'
+  fail-on-diff:
+    description: Fail when a diff exceeds threshold.
+    required: false
+    default: 'true'
+  timeout-seconds:
+    description: Per-page Actor navigation timeout (5 to 180 seconds).
+    required: false
+    default: '45'
+  diff-images-dir:
+    description: Optional directory for downloaded diff PNGs to upload as an artifact.
+    required: false
+    default: ''
+outputs:
+  max-diff-percent:
+    description: Largest measured diff percentage; 0 when no baselines are supplied.
+    value: ${{ steps.check.outputs.max-diff-percent }}
+  failed-count:
+    description: Number of comparisons above threshold.
+    value: ${{ steps.check.outputs.failed-count }}
+  results-json:
+    description: JSON array of normalized per-URL results.
+    value: ${{ steps.check.outputs.results-json }}
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      env:
+        APIFY_TOKEN: ${{ inputs.apify-token }}
+        INPUT_URLS: ${{ inputs.urls }}
+        INPUT_THRESHOLD: ${{ inputs.threshold }}
+        INPUT_VIEWPORT_WIDTH: ${{ inputs.viewport-width }}
+        INPUT_FULL_PAGE: ${{ inputs.full-page }}
+        INPUT_FAIL_ON_DIFF: ${{ inputs.fail-on-diff }}
+        INPUT_TIMEOUT_SECONDS: ${{ inputs.timeout-seconds }}
+        INPUT_DIFF_IMAGES_DIR: ${{ inputs.diff-images-dir }}
+      run: |
+        printf '::add-mask::%s\n' "$APIFY_TOKEN"
+        node "${{ github.action_path }}/scripts/check.mjs"

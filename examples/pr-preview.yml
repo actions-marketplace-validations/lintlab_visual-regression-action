@@ -1,0 +1,45 @@
+name: Visual regression preview
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+      PREVIEW_URL: ${{ vars.PREVIEW_URL }} # Set to the public Vercel/Netlify preview URL for this PR.
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }} # For example, https://www.example.com.
+    steps:
+      - name: Check preview against production
+        id: visual
+        if: env.APIFY_TOKEN != '' && env.PREVIEW_URL != '' && env.PRODUCTION_URL != ''
+        uses: lintlab/visual-regression-action@v1
+        with:
+          apify-token: ${{ env.APIFY_TOKEN }}
+          urls: ${{ format('{0}|{1}', env.PREVIEW_URL, env.PRODUCTION_URL) }}
+          threshold: '0.5'
+          diff-images-dir: diff-images
+      - name: Upload diff images
+        if: always() && steps.visual.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: diff-images/
+          if-no-files-found: ignore
+
+  self-test:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+    steps:
+      - name: Compare example.com with itself
+        if: env.APIFY_TOKEN != ''
+        uses: lintlab/visual-regression-action@v1
+        with:
+          apify-token: ${{ env.APIFY_TOKEN }}
+          urls: https://example.com|https://example.com
+          threshold: '0'

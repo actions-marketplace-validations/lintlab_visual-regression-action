@@ -72,6 +72,6 @@ This Action fits when you have **public** URLs (a preview deploy and production,
 
 ## Support
 
-Open an issue in this repository, or email lintlab.dev@gmail.com. More tools: [lintlab.pages.dev](https://lintlab.pages.dev/).
+Open an issue in this repository, or email lintlab.dev@gmail.com. More tools: [lintlab.dev](https://lintlab.dev/).
 
 Built by **lintlab** — small, reliable data tools. Tested before release.

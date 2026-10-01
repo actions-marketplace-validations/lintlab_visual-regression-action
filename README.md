@@ -49,7 +49,7 @@ The Action is free and MIT-licensed. The Actor it calls is billed to your Apify 
 - **$0.004 per successful capture**
 - **$0.002 per computed diff**
 
-So one page compared against its baseline costs $0.006 in Actor events, plus the Apify platform usage of the run. A PR check covering 10 pages costs about $0.06 in events. Failed captures are not charged as captures.
+So one page compared against its baseline costs $0.006 in Actor events; Apify platform usage is included in the event prices. A PR check covering 10 pages costs about $0.06 in events. Failed captures are not charged as captures.
 
 ## When a free tool is better
 
